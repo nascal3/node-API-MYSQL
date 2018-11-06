@@ -1,9 +1,16 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const {Connection} = require('../startup/db');
+require('express-async-errors');
+const router = express.Router();
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', async (req, res) => {
+
+  await Connection.query('SELECT * FROM users', (error, results, fields) => {
+    if (error) return res.send(error);
+    res.send(results);
+  })
+
 });
 
 module.exports = router;
