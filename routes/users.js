@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const generateToken = require('../models/usersTokenGen');
 const {Connection} = require('../startup/db');
 require('express-async-errors');
 const router = express.Router();
@@ -45,7 +46,13 @@ router.post('/', async (req, res) => {
     await Connection.query('INSERT INTO users SET ?', newData, (error, results, fields) => {
       if (error) return res.status(400).send(error);
 
-      return res.status(200).send(results);
+      let id  = results.insertId;
+
+      const token = generateToken(id, data.first_name, data.email);
+      results = {...results, userToken: token};
+
+      return res.header('x-auth-token', token).status(200).send(results);
+
     })
   };
 });
