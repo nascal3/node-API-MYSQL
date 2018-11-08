@@ -17,9 +17,15 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
 
+  let role = "user";
+  if (req.body.role) {
+    role = req.body.role
+  }
+
   const data = {
     first_name: req.body.first_name,
     last_name: req.body.last_name,
+    role: role,
     password: req.body.password,
     email: req.body.email
   };
@@ -48,7 +54,7 @@ router.post('/', async (req, res) => {
 
       let id  = results.insertId;
 
-      const token = generateToken(id, data.first_name, data.email);
+      const token = generateToken(id, data.first_name, data.role, data.email);
       results = {...results, userToken: token};
 
       return res.header('x-auth-token', token).status(200).send(results);
