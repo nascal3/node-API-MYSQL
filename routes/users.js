@@ -10,8 +10,10 @@ const router = express.Router();
 /* GET users listing. */
 router.get('/', auth, async (req, res) => {
 
-  const [rows, field] = await Connection.execute('SELECT * FROM users');
-  res.send(rows);
+  const allUsers = await User.findAll({
+    attributes: { exclude: ['password'] }
+  });
+  res.send(allUsers);
 });
 
 router.post('/', async (req, res) => {
