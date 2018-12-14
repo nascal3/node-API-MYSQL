@@ -1,18 +1,16 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const auth = require('../middleware/auth');
 const generateToken = require('../models/usersTokenGen');
-const connection = require('../startup/db');
+const Connection = require('../startup/db');
 require('express-async-errors');
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
 
-  await connection.execute('SELECT * FROM users', (error, results, fields) => {
-    if (error) return res.send(error);
-    res.send(results);
-  })
-
+  const [rows, field] = await Connection.execute('SELECT * FROM users');
+  res.send(rows);
 });
 
 router.post('/', async (req, res) => {
@@ -31,36 +29,25 @@ router.post('/', async (req, res) => {
   };
 
   // CHECK IF USERNAME / EMAIL ALREADY EXISTS
-  await connection.execute('SELECT COUNT(email) as email_count FROM users WHERE email = ?', [data.email], (error, results, fields) => {
-    if (error) return res.status(400).send(error);
-
-   if (results[0].email_count >= 1) return res.status(400).send('the following user already exists');
-
-   salt_password();
-
-  });
+  const [rows, fields] = await Connection.execute('SELECT COUNT(email) as email_count FROM users WHERE email = ?', [data.email]);
+  if (rows[0].email_count >= 1) return res.status(400).send('the following user already exists');
 
   // SALT THE PASSWORD AND INSERT NEW USER INTO DB
-  let salt_password = async () => {
-    const salt = await bcrypt.genSalt(10);
-    const salted_password = await bcrypt.hash(data.password, salt);
+  const salt = await bcrypt.genSalt(10);
+  const salted_password = await bcrypt.hash(data.password, salt);
 
-    let newData = {...data};
-    newData.password = salted_password;
+  let newData = {...data};
+  newData.password = salted_password;
 
-    // INSERT NEW USER INTO DATABASE
-    await connection.query('INSERT INTO users SET ?', newData, (error, results, fields) => {
-      if (error) return res.status(400).send(error);
+  // INSERT NEW USER INTO DATABASE
+  const [row, feilds] = await Connection.query('INSERT INTO users SET ?', newData);
 
-      let id  = results.insertId;
+  let id  = row.insertId;
+  const token = generateToken(id, data.first_name, data.role, data.email);
+  let userData = {...row, userToken: token};
 
-      const token = generateToken(id, data.first_name, data.role, data.email);
-      results = {...results, userToken: token};
+  return res.header('x-auth-token', token).status(200).send(userData);
 
-      return res.header('x-auth-token', token).status(200).send(results);
-
-    })
-  };
 });
 
 module.exports = router;

@@ -7,7 +7,7 @@ const router = express.Router();
 // GET ALL ARTICLES
 router.get('/', auth, async (req, res) => {
 
-  [rows, fields] = await Connection.execute('SELECT * FROM articles');
+  const [rows, fields] = await Connection.execute('SELECT * FROM articles');
   res.status(200).send(rows);
 });
 
