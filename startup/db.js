@@ -1,21 +1,23 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const config = require('config');
 
 const options = {
+  host: 'localhost',
   user: config.get('user'),
   password: config.get('password'),
   database: config.get('database')
 };
 
-const connection = mysql.createConnection(options);
+const connection = mysql.createPool(options);
 
-connection.connect((err) => {
-  if (err) {
-    console.error('An error occurred while connecting to the DB');
-    throw err;
+const Connection = connection.promise();
+
+Connection.execute('select * from users').then((results) => {
+  if (results) {
+    console.log('DB connected successfully');
   }
+}).catch(err => {
+    console.error(`An error occurred while connecting to the DB: ${err} `);
 });
 
-console.log('DB connected successfully');
-
-module.exports.Connection = connection;
+module.exports = connection;
