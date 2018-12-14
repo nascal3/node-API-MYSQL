@@ -1,14 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const generateToken = require('../models/usersTokenGen');
-const {Connection} = require('../startup/db');
+const connection = require('../startup/db');
 require('express-async-errors');
 const router = express.Router();
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
 
-  await Connection.query('SELECT * FROM users', (error, results, fields) => {
+  await connection.execute('SELECT * FROM users', (error, results, fields) => {
     if (error) return res.send(error);
     res.send(results);
   })
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
   };
 
   // CHECK IF USERNAME / EMAIL ALREADY EXISTS
-  await Connection.query('SELECT COUNT(email) as email_count FROM users WHERE email = ?', [data.email], (error, results, fields) => {
+  await connection.execute('SELECT COUNT(email) as email_count FROM users WHERE email = ?', [data.email], (error, results, fields) => {
     if (error) return res.status(400).send(error);
 
    if (results[0].email_count >= 1) return res.status(400).send('the following user already exists');
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
     newData.password = salted_password;
 
     // INSERT NEW USER INTO DATABASE
-    await Connection.query('INSERT INTO users SET ?', newData, (error, results, fields) => {
+    await connection.query('INSERT INTO users SET ?', newData, (error, results, fields) => {
       if (error) return res.status(400).send(error);
 
       let id  = results.insertId;
