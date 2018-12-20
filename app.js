@@ -9,7 +9,7 @@ const model = require('./models/articles');
 require('./startup/routes')(app);
 
 // CREATE TABLES IF THEY DON'T EXIST
-model.sequelize.sync().then(result => {
+sequelize.sync().then(result => {
   const port = process.env.PORT || 3000;
   app.listen( port, console.log(`listening to port ${port}`));
 }).catch( err => {
