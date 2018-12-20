@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const auth = require('../middleware/auth');
 const generateToken = require('../models/usersTokenGen');
-const Connection = require('../startup/db');
 const User = require('../models/users');
 require('express-async-errors');
 const router = express.Router();
