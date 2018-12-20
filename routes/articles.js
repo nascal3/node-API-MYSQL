@@ -1,14 +1,15 @@
 const express = require('express');
-const Connection = require('../startup/db');
+const Article = require('../models/articles');
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 require('express-async-errors');
 const router = express.Router();
 
 // GET ALL ARTICLES
-router.get('/', auth, async (req, res) => {
+router.get('/', [auth, admin], async (req, res) => {
 
-  const [rows, fields] = await Connection.execute('SELECT * FROM articles');
-  res.status(200).send(rows);
+  const article = await Article.findAll();
+  res.send(article);
 });
 
 module.exports = router;
