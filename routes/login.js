@@ -22,9 +22,10 @@ router.post('/', async(req, res) => {
 
     let id = results.dataValues.id;
     let first_name = results.dataValues.first_name;
+    let last_name = results.dataValues.last_name;
     let role = results.dataValues.role;
     let email = results.dataValues.email;
-    const token = generateToken(id, first_name, role, email);
+    const token = generateToken(id, first_name, last_name, role, email);
     const userToken = {
       userToken: token
     };
