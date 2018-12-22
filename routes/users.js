@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
   let result = await User.create(newData);
 
   let id  = result.dataValues.id;
-  const token = generateToken(id, data.first_name, data.role, data.email);
+  const token = generateToken(id, data.first_name, data.last_name, data.role, data.email);
 
   return res.header('x-auth-token', token).status(200).send(result.dataValues);
 });
