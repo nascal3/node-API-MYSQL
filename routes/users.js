@@ -6,7 +6,7 @@ const User = require('../models/users');
 require('express-async-errors');
 const router = express.Router();
 
-/* GET users listing. */
+// GET users listing
 router.get('/', auth, async (req, res) => {
 
   const allUsers = await User.findAll({
@@ -15,6 +15,7 @@ router.get('/', auth, async (req, res) => {
   res.send(allUsers);
 });
 
+// REGISTER NEW USERS
 router.post('/', async (req, res) => {
 
   let role = "user";
@@ -36,7 +37,7 @@ router.post('/', async (req, res) => {
       email: data.email
     }
   });
-  console.log(count);
+
   if (count.length >= 1) return res.status(400).send('the following user already exists');
 
   // SALT THE PASSWORD AND INSERT NEW USER INTO DB
