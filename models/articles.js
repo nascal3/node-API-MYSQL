@@ -18,7 +18,13 @@ const article = sequelize.define('article', {
     }
   },
   title: Sequelize.TEXT,
-  article_content: Sequelize.TEXT
+  article_content: Sequelize.TEXT,
+  publish: {
+    type:   Sequelize.ENUM,
+    allowNull: false,
+    values: ['true', 'false'],
+    defaultValue: 'true'
+  }
 });
 
 module.exports = article;
