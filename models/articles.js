@@ -24,6 +24,12 @@ const article = sequelize.define('article', {
     allowNull: false,
     values: ['true', 'false'],
     defaultValue: 'true'
+  },
+  deleted: {
+    type: Sequelize.ENUM,
+    allowNull: false,
+    values: ['true', 'false'],
+    defaultValue: 'true'
   }
 });
 
