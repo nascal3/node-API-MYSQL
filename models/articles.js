@@ -29,7 +29,7 @@ const article = sequelize.define('article', {
     type: Sequelize.ENUM,
     allowNull: false,
     values: ['true', 'false'],
-    defaultValue: 'true'
+    defaultValue: 'false'
   }
 });
 
