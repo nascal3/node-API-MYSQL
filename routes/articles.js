@@ -33,7 +33,6 @@ router.get('/all', auth, async (req, res) => {
 router.post('/new', auth, async (req, res) => {
 
   const results = await Article.create({
-    user_id: req.user.id,
     title: req.body.title,
     article_content: req.body.content
   });
