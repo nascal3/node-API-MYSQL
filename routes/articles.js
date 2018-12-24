@@ -13,7 +13,7 @@ router.get('/', [auth, admin], async (req, res) => {
 });
 
 // GET ARTICLES FOR ONLY FOR THE LOGGED USER
-router.get('/me', auth, async (req, res) => {
+router.get('/all', auth, async (req, res) => {
 
    const articles = await Article.findAll({
     where: {
@@ -27,6 +27,18 @@ router.get('/me', auth, async (req, res) => {
   });
 
   res.status(200).send(data);
+});
+
+// CREATE NEW ARTICLE
+router.post('/new', auth, async (req, res) => {
+
+  const results = await Article.create({
+    user_id: req.user.id,
+    title: req.body.title,
+    article_content: req.body.content
+  });
+
+  res.status(200).send(results);
 });
 
 module.exports = router;
