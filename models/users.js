@@ -10,7 +10,12 @@ const User = sequelize.define('user', {
   },
   first_name: Sequelize.STRING,
   last_name: Sequelize.STRING,
-  role: Sequelize.STRING,
+  role: {
+    type: Sequelize.ENUM,
+    allowNull: false,
+    values: ['user', 'editor', 'admin'],
+    defaultValue: 'user'
+  },
   email: {
     type: Sequelize.STRING,
     unique: true
