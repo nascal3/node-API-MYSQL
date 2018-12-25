@@ -1,5 +1,6 @@
 const express = require('express');
 const Article = require('../models/articles');
+const User = require('../models/users');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 require('express-async-errors');
@@ -8,19 +9,40 @@ const router = express.Router();
 // GET ALL ARTICLES
 router.get('/', [auth, admin], async (req, res) => {
   const article = await Article.findAll();
-  res.send(article);
+  res.status(200).send(article);
 });
 
-// GET SINGLE ARTICLE
+//  GET SINGLE ARTICLE
+router.get('/me/:id', auth, async (req, res) => {
+  const article = await singleArticle(req.body.id);
+  if (!article) return res.status(400).send('The following article does not exist or was moved!');
+
+  if (req.user.role === 'admin' || req.user.id === article.user_id) {
+    res.status(200).send(article);
+  } else if (req.user.id !== article.user_id) {
+    return res.status(403).send('permission denied for this operation!');
+  }
+
+});
+
+// FUNCTION GET SINGLE ARTICLE
 const singleArticle = async (id) => {
   const result = await Article.findOne({
     where: {
       id: id
     }
   });
-
   if (result == null ) return false;
-  return result;
+
+  const userInfo = await User.findOne({
+    attributes: ['first_name', 'last_name'],
+    where: {
+      id: result.dataValues.user_id
+    }
+  });
+  if (userInfo == null ) return false;
+
+  return {...result.dataValues, 'name': userInfo.dataValues.first_name + ' ' + userInfo.dataValues.last_name};
 };
 
 // GET ALL ARTICLES FOR ONLY THE LOGGED USER
